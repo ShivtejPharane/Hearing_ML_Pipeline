@@ -20,7 +20,7 @@ logger.setLevel('DEBUG')
 console_handler = logging.StreamHandler()
 console_handler.setLevel('DEBUG')
 
-log_file_path = "./logs/model_evaluation.py"
+log_file_path = "./logs/model_evaluation.log"
 file_handler = logging.FileHandler(log_file_path)
 file_handler.setLevel('DEBUG')
 
