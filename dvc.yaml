@@ -3,15 +3,15 @@ stages:
     cmd: python src/data_ingestion.py
     deps:
     - src/data_ingestion.py
-    # params:
-    # - data_ingestion.test_size
     outs:
     - dataset/Dataset
-  data_preprecessing:
+  data_preprocessing:
     cmd: python src/data_preprocessing.py
     deps:
     - dataset/Dataset
     - src/data_preprocessing.py
+    params:
+    - data_preprocessing.test_size
     outs:
     - data/raw
   model_training:
@@ -19,9 +19,8 @@ stages:
     deps:
     - data/raw
     - src/model_training.py
-    # params:
-    # - model_building.n_estimators
-    # - model_building.random_state
+    params:
+    - model_training.max_depth
     outs:
     - models/model.pkl
   model_evaluation:
@@ -32,3 +31,10 @@ stages:
     metrics:
     - reports/metrics.json
 
+params:
+- dvclive/params.yaml
+metrics:
+- dvclive/metrics.json
+plots:
+- dvclive/plots/metrics:
+    x: step

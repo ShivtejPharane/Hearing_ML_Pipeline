@@ -4,7 +4,8 @@ import logging
 import pickle
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier
-
+import yaml
+from dvclive import Live
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 log_dir = os.path.join(PROJECT_ROOT,"logs")
@@ -26,6 +27,23 @@ file_handler.setFormatter(formatter)
 
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
+
+def load_params(params_path: str) -> dict:
+    """Load parameters from a YAML file."""
+    try:
+        with open(params_path, 'r') as file:
+            params = yaml.safe_load(file)
+        logger.debug('Parameters retrieved from %s', params_path)
+        return params
+    except FileNotFoundError:
+        logger.error('File not found: %s', params_path)
+        raise
+    except yaml.YAMLError as e:
+        logger.error('YAML error: %s', e)
+        raise
+    except Exception as e:
+        logger.error('Unexpected error: %s', e)
+        raise
 
 def train_model(x_train:np.ndarray,y_train:np.ndarray,max_depth:int)->DecisionTreeClassifier:
     """Train the Descision tree model 
@@ -65,11 +83,12 @@ def save_model(model,file_path:str)->None:
 def main():
     try:
         train_data = pd.read_csv("./data/raw/train.csv")
-
+        params = load_params('params.yaml')['model_training']['max_depth']
         x_train = train_data.iloc[:,:-1].values
         y_train = train_data.iloc[:,-1].values
-
-        dt = train_model(x_train=x_train,y_train=y_train,max_depth=3)
+        
+        dt = train_model(x_train=x_train,y_train=y_train,max_depth=params)
+        
         model_save_path = os.path.join('.','models','model.pkl')
         save_model(dt,model_save_path)
         
