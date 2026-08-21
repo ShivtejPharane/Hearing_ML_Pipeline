@@ -1,4 +1,4 @@
 data_preprocessing:
-  test_size: 0.3
+  test_size: 0.25
 model_training:
   max_depth: 3
